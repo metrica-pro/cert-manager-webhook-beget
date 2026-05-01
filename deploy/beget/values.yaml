@@ -6,7 +6,7 @@
 # solve the DNS01 challenge.
 # This group name should be **unique**, hence using your own company's domain
 # here is recommended.
-groupName: acme.borisd.ru
+groupName: acme.example.com
 
 begetDnsApiUrl: "https://api.beget.com"
 
@@ -15,8 +15,8 @@ certManager:
   serviceAccountName: cert-manager
 
 image:
-  repository: ghcr.io/boryashkin/cert-manager-webhook-beget
-  tag: 1.0.0
+  repository: ghcr.io/metrica-pro/cert-manager-webhook-beget
+  tag: "1.1.0"
   pullPolicy: IfNotPresent
 
 nameOverride: ""

@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/boryashkin/cert-manager-webhook-beget/begetapi"
+	"github.com/metrica-pro/cert-manager-webhook-beget/begetapi"
 	dns "github.com/cert-manager/cert-manager/test/acme"
 )
 

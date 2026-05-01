@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/boryashkin/cert-manager-webhook-beget/begetapi"
+	"github.com/metrica-pro/cert-manager-webhook-beget/begetapi"
 
 	acme "github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"

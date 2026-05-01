@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/boryashkin/cert-manager-webhook-beget/begetapi"
+	"github.com/metrica-pro/cert-manager-webhook-beget/begetapi"
 	"github.com/stretchr/testify/suite"
 )
 

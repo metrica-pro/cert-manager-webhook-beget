@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/boryashkin/cert-manager-webhook-beget/begetapi"
+	"github.com/metrica-pro/cert-manager-webhook-beget/begetapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

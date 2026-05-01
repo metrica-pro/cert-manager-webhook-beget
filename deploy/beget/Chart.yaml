@@ -1,5 +1,18 @@
-apiVersion: v1
-appVersion: "1.0"
-description: A cert-manager webhook for beget
+apiVersion: v2
 name: cert-manager-beget-webhook
-version: 1.0.0
+description: cert-manager DNS-01 webhook for Beget DNS API (metrica-pro fork)
+type: application
+version: 1.1.0
+appVersion: "1.1.0"
+keywords:
+  - cert-manager
+  - beget
+  - dns01
+  - acme
+  - letsencrypt
+home: https://github.com/metrica-pro/cert-manager-webhook-beget
+sources:
+  - https://github.com/metrica-pro/cert-manager-webhook-beget
+maintainers:
+  - name: Metrica Pro
+    url: https://github.com/metrica-pro

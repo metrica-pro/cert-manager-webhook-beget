@@ -2,39 +2,105 @@
   <img src="https://raw.githubusercontent.com/cert-manager/cert-manager/d53c0b9270f8cd90d908460d69502694e1838f5f/logo/logo-small.png" height="32" width="32" alt="cert-manager project logo" />
 </p>
 
-# [Beget](https://beget.com/p259374) DNS01 webhook 
+# cert-manager DNS-01 webhook for Beget
 
-## Status
+Форк [boryashkin/cert-manager-webhook-beget](https://github.com/boryashkin/cert-manager-webhook-beget) с обновлёнными зависимостями и собственной CI-сборкой.
 
-The module is active, but the underlying API is rarely changing, not much to update yet. Give it a star, if you're using it.
+## Что отличается от upstream
 
-## Installation
+- Зависимости: cert-manager `v1.20.2`, k8s.io/* `v0.35.4`, Go `1.26.1`.
+- Helm chart репо: `https://metrica-pro.github.io/cert-manager-webhook-beget/`.
+- Docker image: `ghcr.io/metrica-pro/cert-manager-webhook-beget`.
+- GitHub Actions: CI на каждый push, release сборка + публикация chart на push tag `v*`.
 
-- Read 
-    - https://cert-manager.io/docs/configuration/acme/dns01/
-    - https://cert-manager.io/docs/configuration/acme/
+Логика webhook'а — без изменений: тот же DNS-01 solver через Beget DNS API (`api.beget.com`, login + passwd).
 
-- install [cert-manager](https://github.com/cert-manager/cert-manager)
-    - `kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.1/cert-manager.yaml`
-- instal the issuer:
-    - **NOTE**: The kubernetes resources used to install the Webhook should be deployed within the same namespace as the cert-manager ("cert-manager" by default, check ./deploy/values.yaml).
-    - `helm repo add boryashkin https://boryashkin.github.io/helm-charts/`
-    - `helm repo update`
-    - `helm install cert-beget boryashkin/cert-manager-beget-webhook`
-    - OR
-      - pull this repo
-      - `helm install webhook-beget ./deploy/beget -f ./deploy/values.yaml -n cert-manager`
-- create a secret for beget API
-- create an issuer
-- request certificates
-- add the certificates to services
-
-Follow ***an example*** for details: [testdata/resources](testdata/resources/README.md).
-
-## Tests
-
-You can run the webhook test suite with:
+## Установка
 
 ```bash
-$ TEST_ZONE_NAME=example.com. make test
+helm repo add metrica-pro https://metrica-pro.github.io/cert-manager-webhook-beget/
+helm repo update
+
+helm install cert-manager-webhook-beget metrica-pro/cert-manager-beget-webhook \
+    --namespace cert-manager \
+    --set groupName=acme.your-domain.example
 ```
+
+## Конфигурация
+
+1. Создать Secret с Beget API кредами в `cert-manager` namespace (или там, где cert-manager controller имеет `--cluster-resource-namespace`):
+
+   ```yaml
+   apiVersion: v1
+   kind: Secret
+   metadata:
+     name: beget-credentials
+     namespace: cert-manager
+   type: Opaque
+   stringData:
+     login: "your-login"
+     passwd: "your-api-password"
+   ```
+
+2. ClusterIssuer:
+
+   ```yaml
+   apiVersion: cert-manager.io/v1
+   kind: ClusterIssuer
+   metadata:
+     name: beget-letsencrypt-prod
+   spec:
+     acme:
+       server: https://acme-v02.api.letsencrypt.org/directory
+       email: you@example.com
+       privateKeySecretRef:
+         name: beget-letsencrypt-prod
+       solvers:
+         - selector:
+             dnsZones:
+               - your-domain.example
+           dns01:
+             webhook:
+               groupName: acme.your-domain.example
+               solverName: beget
+               config:
+                 apiLoginSecretRef:
+                   name: beget-credentials
+                   key: login
+                 apiPasswdSecretRef:
+                   name: beget-credentials
+                   key: passwd
+   ```
+
+3. Certificate:
+
+   ```yaml
+   apiVersion: cert-manager.io/v1
+   kind: Certificate
+   metadata:
+     name: wildcard-tls
+     namespace: <consumer-namespace>
+   spec:
+     secretName: wildcard-tls
+     issuerRef:
+       name: beget-letsencrypt-prod
+       kind: ClusterIssuer
+     dnsNames:
+       - "*.your-domain.example"
+       - your-domain.example
+   ```
+
+## Local dev
+
+```bash
+go test ./begetapi/... ./example/...    # unit тесты
+go build ./...                           # компиляция
+docker build -t webhook:dev .            # локальный образ
+helm lint deploy/beget                   # линт chart'а
+```
+
+Полный integration test (`go test .`) требует `kubebuilder` tools (etcd + kube-apiserver) — см. `Makefile` target `_test/kubebuilder`.
+
+## Лицензия
+
+Apache 2.0 (как upstream).

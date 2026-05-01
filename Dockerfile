@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine AS build_deps
+FROM golang:1.26.1-alpine AS build_deps
 
 RUN apk add --no-cache git
 
@@ -15,8 +15,8 @@ COPY . .
 
 RUN CGO_ENABLED=0 go build -o webhook -ldflags '-w -extldflags "-static"' .
 
-FROM alpine:3.18
-LABEL org.opencontainers.image.source=https://github.com/boryashkin/cert-manager-webhook-beget
+FROM alpine:3.20
+LABEL org.opencontainers.image.source=https://github.com/metrica-pro/cert-manager-webhook-beget
 
 RUN apk add --no-cache ca-certificates
 
