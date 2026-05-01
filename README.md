@@ -4,8 +4,6 @@
 
 # cert-manager DNS-01 webhook for Beget
 
-Форк [boryashkin/cert-manager-webhook-beget](https://github.com/boryashkin/cert-manager-webhook-beget) с обновлёнными зависимостями и собственной CI-сборкой.
-
 ## Что отличается от upstream
 
 - Зависимости: cert-manager `v1.20.2`, k8s.io/* `v0.35.4`, Go `1.26.1`.
