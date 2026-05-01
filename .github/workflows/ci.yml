@@ -22,8 +22,8 @@ jobs:
           go mod download
           go mod verify
 
-      - name: Build
-        run: go build -v ./...
+      - name: Build webhook binary
+        run: go build -v .
 
       - name: Unit tests (begetapi only)
         # example/ это integration-test cert-manager webhook conformance suite,
@@ -31,8 +31,11 @@ jobs:
         # локально через `make test` с kubebuilder/etcd/kube-apiserver tools.
         run: go test -v ./begetapi/...
 
-      - name: Vet
-        run: go vet ./...
+      - name: Vet (без example/)
+        # example/example_test.go использует unkeyed dns.Question literals из
+        # cert-manager test-suite — vet ругается, но это код conformance-сьюита,
+        # не наш. Vet'им только релевантные пакеты.
+        run: go vet . ./begetapi/...
 
   helm-lint:
     runs-on: ubuntu-latest
