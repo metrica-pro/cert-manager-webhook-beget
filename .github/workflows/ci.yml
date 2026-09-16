@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# Minimal read-only token scope (CodeQL actions/missing-workflow-permissions).
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
