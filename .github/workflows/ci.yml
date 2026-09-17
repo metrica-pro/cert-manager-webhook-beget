@@ -10,9 +10,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    # budget: warm p90 147s ×2 (~5m raw), 15m applied per build category default
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -43,6 +49,8 @@ jobs:
 
   helm-lint:
     runs-on: ubuntu-latest
+    # budget: warm p90 6s ×2, 10m applied (lint floor per ci-runners skill)
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: azure/setup-helm@v4
